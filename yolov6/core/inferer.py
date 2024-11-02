@@ -117,7 +117,16 @@ class Inferer:
                 img_src = np.asarray(img_ori)
 
             # FPS counter
-            fps_calculator.update(1.0 / (t2 - t1))
+            # 增加帧处理延迟：
+
+            # 在 infer.py 中，可以加入一个小的延迟，确保 t1 和 t2 不会相同。例如，在 fps_calculator.update 之前加入 time.sleep(0.01)。
+            # time.sleep(0.01) # 延迟 0.01 秒
+
+
+            # 在 infer.py 的 infer 方法中，修改时间计算的方式，确保即使在极短时间内也不会出现除以零的情况。可以使用 max 函数来避免：
+            fps_calculator.update(1.0 / max(t2 - t1, 1e-6))
+
+            # fps_calculator.update(1.0 / (t2 - t1))
             avg_fps = fps_calculator.accumulate()
 
             if self.files.type == 'video':
